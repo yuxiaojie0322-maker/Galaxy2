@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write    # 👈 新增：删除 workflow runs 所需权限
     
     steps:
       - name: Checkout
@@ -46,3 +47,13 @@ jobs:
           commit_user_name: "github-actions[bot]"
           commit_user_email: "github-actions[bot]@users.noreply.github.com"
           file_pattern: README.md
+
+      # 👇 新增：自动删除旧记录，仅保留最新的 1 条
+      - name: Delete old workflow runs
+        uses: Mattraks/delete-workflow-runs@v2
+        if: always()
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          retain_minimum_runs: 1
+          keep_minimum_runs: 1
